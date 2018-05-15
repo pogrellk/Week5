@@ -1,7 +1,9 @@
 import os
 import numpy as np
+import numpy.ma as ma
 import gdal
 import glob
+
 
 #root_folder = "/Users/luisevonpogrell/Desktop/Python/W5/"
 
@@ -62,7 +64,8 @@ print(inv_gt_slope)
 offset_slope = gdal.ApplyGeoTransform(inv_gt_slope, 1399618.9749825108, 705060.6257949192)
 xoff_slope, yoff_slope = map(int, offset_slope)
 array_slope = slope.ReadAsArray(xoff_slope, yoff_slope, 599, 1239) #row, and column
-print(array_slope)
+ma_slope = ma.masked_where(array_slope < 0, array_slope)
+print(ma_slope)
 
 
 inv_gt_dem = gdal.InvGeoTransform(gt_dem)
@@ -71,7 +74,8 @@ offset_dem = gdal.ApplyGeoTransform(inv_gt_dem, 1399618.9749825108, 705060.62579
 xoff_dem, yoff_dem = map(int, offset_dem)
 array_dem = dem.ReadAsArray(xoff_dem, yoff_dem, 599, 1239) #row, and column
 print(array_dem)
-comp_dem = np.where(array_dem == 35536 , "NoData", array_dem)
+ma_dem =  ma.masked_where(array_dem >= 65535, array_dem)
+print(ma_dem)
 
 
 inv_gt_thp = gdal.InvGeoTransform(gt_thp)
@@ -80,6 +84,15 @@ offset_thp = gdal.ApplyGeoTransform(inv_gt_thp, 1399618.9749825108, 705060.62579
 xoff_thp, yoff_thp = map(int, offset_thp)
 array_thp = thp.ReadAsArray(xoff_thp, yoff_thp, 599, 1239) #row, and column
 print(array_thp)
+ma_thp = ma.masked_where(array_thp > 10000, array_thp)
+print(ma_thp)
+
+print("Mean of Slope:", np.mean(ma_slope), "Min of Slope:", np.min(ma_slope), "Max of Slope:", np.max(ma_slope))
+print("Mean of DEM:", np.mean(ma_dem), "Min of DEM:", np.min(ma_dem), "Max of DEM:", np.max(ma_dem))
+
+
+
+
 # calculate the common extend
 # calculate dimensions of the array
 # convert the three layers into arrays, get only the array values from the common extend
