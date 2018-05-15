@@ -64,8 +64,8 @@ print(inv_gt_slope)
 offset_slope = gdal.ApplyGeoTransform(inv_gt_slope, 1399618.9749825108, 705060.6257949192)
 xoff_slope, yoff_slope = map(int, offset_slope)
 array_slope = slope.ReadAsArray(xoff_slope, yoff_slope, 599, 1239) #row, and column
-ma_slope = ma.masked_where(array_slope < 0, array_slope)
-print(ma_slope)
+oma_slope = ma.masked_where(array_slope < 0, array_slope).copy()
+print("OMA_SLOPE", oma_slope)
 
 
 inv_gt_dem = gdal.InvGeoTransform(gt_dem)
@@ -73,9 +73,8 @@ print(inv_gt_dem)
 offset_dem = gdal.ApplyGeoTransform(inv_gt_dem, 1399618.9749825108, 705060.6257949192)
 xoff_dem, yoff_dem = map(int, offset_dem)
 array_dem = dem.ReadAsArray(xoff_dem, yoff_dem, 599, 1239) #row, and column
-print(array_dem)
-ma_dem =  ma.masked_where(array_dem >= 65535, array_dem)
-print(ma_dem)
+oma_dem = ma.masked_where(array_dem >= 65535, array_dem).copy()
+print("OMA_DEM", oma_dem)
 
 
 inv_gt_thp = gdal.InvGeoTransform(gt_thp)
@@ -83,15 +82,17 @@ print(inv_gt_thp)
 offset_thp = gdal.ApplyGeoTransform(inv_gt_thp, 1399618.9749825108, 705060.6257949192)
 xoff_thp, yoff_thp = map(int, offset_thp)
 array_thp = thp.ReadAsArray(xoff_thp, yoff_thp, 599, 1239) #row, and column
-print(array_thp)
-ma_thp = ma.masked_where(array_thp > 10000, array_thp)
-print(ma_thp)
+oma_thp = ma.masked_where(array_thp > 10000, array_thp).copy()
+print("OMA_THP", oma_thp)
 
-print("Mean of Slope:", np.mean(ma_slope), "Min of Slope:", np.min(ma_slope), "Max of Slope:", np.max(ma_slope))
-print("Mean of DEM:", np.mean(ma_dem), "Min of DEM:", np.min(ma_dem), "Max of DEM:", np.max(ma_dem))
+print("Mean of Slope:", np.mean(oma_slope), "Min of Slope:", np.min(oma_slope), "Max of Slope:", np.max(oma_slope))
+print("Mean of DEM:", np.mean(oma_dem), "Min of DEM:", np.min(oma_dem), "Max of DEM:", np.max(oma_dem))
 
+array_dem_slope = ma.dstack((oma_dem, oma_slope))
+print(array_dem_slope)
 
-
+abc = array_dem_slope[ma.masked_where(((oma_dem < 1000) & (oma_slope <30)), dtype = bool)]
+print("ABC", abc)
 
 # calculate the common extend
 # calculate dimensions of the array
