@@ -1,5 +1,5 @@
 import os
-import numpy
+import numpy as np
 import gdal
 import glob
 
@@ -27,7 +27,7 @@ gt_dem = dem_ras.GetGeoTransform()
 
 thp_ras = gdal.Open("/Users/luisevonpogrell/Desktop/Python/W5/THP_Humboldt_sub.tif")
 thp = thp_ras.GetRasterBand(1)
-gt_thp = slope_ras.GetGeoTransform()
+gt_thp = thp_ras.GetGeoTransform()
 
 path = "/Users/luisevonpogrell/Desktop/Python/W5/"
 
@@ -65,15 +65,21 @@ array_slope = slope.ReadAsArray(xoff_slope, yoff_slope, 599, 1239) #row, and col
 print(array_slope)
 
 
-
 inv_gt_dem = gdal.InvGeoTransform(gt_dem)
 print(inv_gt_dem)
 offset_dem = gdal.ApplyGeoTransform(inv_gt_dem, 1399618.9749825108, 705060.6257949192)
 xoff_dem, yoff_dem = map(int, offset_dem)
-array_dem = dem.ReadAsArray(xoff, yoff, 599, 1239) #row, and column
+array_dem = dem.ReadAsArray(xoff_dem, yoff_dem, 599, 1239) #row, and column
 print(array_dem)
+comp_dem = np.where(array_dem == 35536 , "NoData", array_dem)
 
 
+inv_gt_thp = gdal.InvGeoTransform(gt_thp)
+print(inv_gt_thp)
+offset_thp = gdal.ApplyGeoTransform(inv_gt_thp, 1399618.9749825108, 705060.6257949192)
+xoff_thp, yoff_thp = map(int, offset_thp)
+array_thp = thp.ReadAsArray(xoff_thp, yoff_thp, 599, 1239) #row, and column
+print(array_thp)
 # calculate the common extend
 # calculate dimensions of the array
 # convert the three layers into arrays, get only the array values from the common extend
