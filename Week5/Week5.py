@@ -91,15 +91,13 @@ print("Mean of DEM:", np.mean(oma_dem), "Min of DEM:", np.min(oma_dem), "Max of 
 array_dem_slope = ma.dstack((oma_dem, oma_slope))
 print(array_dem_slope)
 
-abc = array_dem_slope[ma.masked_where(((oma_dem < 1000) & (oma_slope <30)), dtype = bool)]
-print("ABC", abc)
-
-# calculate the common extend
-# calculate dimensions of the array
-# convert the three layers into arrays, get only the array values from the common extend
-# get NoData values
+#abc = array_dem_slope[ma.masked_where(((oma_dem < 1000) & (oma_slope <30)),1,0).copy]
+#print("ABC", abc)
 
 
+#print(np.shape(oma_slope))
+#print(np.shape(oma_dem))
+#print(np.shape(array_dem_slope))
 
 
 # https://jakevdp.github.io/PythonDataScienceHandbook/
